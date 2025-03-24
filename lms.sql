@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 22, 2025 at 10:55 AM
+-- Generation Time: Mar 24, 2025 at 03:40 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -150,7 +150,8 @@ CREATE TABLE `comments` (
 INSERT INTO `comments` (`id`, `blogpost_id`, `user_id`, `comment`, `status`, `created_at`, `updated_at`) VALUES
 (1, 1, 3, 'asdasdas', '0', '2025-03-21 08:07:54', NULL),
 (2, 4, 4, 'Hello i\'m here', '0', '2025-03-21 20:05:41', NULL),
-(3, 4, 4, 'Yeay', '0', '2025-03-22 01:14:32', NULL);
+(3, 4, 4, 'Yeay', '0', '2025-03-22 01:14:32', NULL),
+(4, 4, 3, 'hi', '0', '2025-03-24 05:08:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -655,7 +656,9 @@ INSERT INTO `replies` (`id`, `blogpost_id`, `user_id`, `comment_id`, `reply`, `s
 (3, 4, 4, 2, 'qwerqweqwrqwr', '0', '2025-03-21 23:45:31', NULL),
 (5, 4, 4, 2, 'HI', '0', '2025-03-22 01:45:21', NULL),
 (6, 4, 4, 1, 'Halo', '0', '2025-03-22 01:45:45', NULL),
-(7, 4, 4, 1, 'What?', '0', '2025-03-22 01:49:27', NULL);
+(7, 4, 4, 1, 'What?', '0', '2025-03-22 01:49:27', NULL),
+(8, 4, 3, 3, 'hi', '0', '2025-03-24 05:07:30', '2025-03-24 05:07:30'),
+(9, 4, 3, 4, 'hello', '0', '2025-03-24 05:10:48', '2025-03-24 05:10:48');
 
 -- --------------------------------------------------------
 
@@ -881,9 +884,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `address`, `role`, `status`, `last_seen`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin', 'admin@gmail.com', NULL, '$2y$10$K/vqnSm3BLgaL9PgcrNWCOaeOSD7YHzb0zueEhPkjDCdbAS4joka6', '202412221500cat profile 2.jpg', '1234', 'Indonesia', 'admin', '1', '2025-03-21 04:45:59', NULL, NULL, '2025-03-20 21:45:59'),
-(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$10$/DsOa07xfd4gOcL.M/JUh.gEW22ERgiQx9bmzDoqaeAgereWFNhn6', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-03-18 05:47:13', NULL, '2025-02-04 07:11:01', '2025-03-17 22:47:13'),
-(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-03-21 08:55:19', NULL, NULL, '2025-03-21 01:55:19'),
+(1, 'Admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412221500cat profile 2.jpg', '1234', 'Indonesia', 'admin', '1', '2025-03-21 04:45:59', NULL, NULL, '2025-03-20 21:45:59'),
+(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-03-18 05:47:13', NULL, '2025-02-04 07:11:01', '2025-03-17 22:47:13'),
+(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-03-24 12:05:52', NULL, NULL, '2025-03-24 05:05:52'),
 (4, 'Onis', 'onis', 'onis@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '20241227150120240130_050807.jpg', '123', 'Korea', 'user', '1', '2025-03-22 08:49:05', NULL, '2024-12-19 05:30:18', '2025-03-22 01:49:05'),
 (5, 'Batu Karang', 'batukarang', 'batukarang@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '202412271447cat glasses.jpg', '0888', 'BBC', 'user', '1', NULL, NULL, '2024-12-25 04:13:09', '2024-12-27 07:49:12'),
 (6, 'Azlia', 'azlia', 'azlia@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', NULL, '0881', 'Indonesia', 'instructor', '1', NULL, NULL, NULL, '2025-02-17 20:14:00'),
@@ -1159,7 +1162,7 @@ ALTER TABLE `chat_messages`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `coupons`
@@ -1237,7 +1240,7 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `replies`
 --
 ALTER TABLE `replies`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `reviews`
