@@ -247,6 +247,14 @@ Route::middleware(['auth','roles:instructor'])->group(function(){
         Route::post('/update/course/video','UpdateCourseVideo')->name('update.course.video');
         Route::post('/update/course/goal','UpdateCourseGoal')->name('update.course.goal');
         Route::get('/delete/course/{id}','DeleteCourse')->name('delete.course');
+
+        Route::get('/all/quiz/{id}', 'AllQuiz')->name('all.quiz');
+        Route::get('/add/quiz/{id}', 'AddQuiz')->name('add.quiz');
+        Route::post('/store/quiz', 'StoreQuiz')->name('store.quiz');
+        Route::get('/edit/quiz/{id}', 'EditQuiz')->name('edit.quiz');
+        Route::put('/update/quiz/{id}', 'UpdateQuiz')->name('update.quiz');
+        Route::get('/delete/quiz/{id}', 'DeleteQuiz')->name('delete.quiz');
+
     });
 
     Route::controller(CourseController::class)->group(function (){

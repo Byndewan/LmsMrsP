@@ -30,9 +30,10 @@
                             <th>Sl</th>
                             <th>Image</th>
                             <th>Course Name</th>
-                            <th>Category</th>
+                            {{-- <th>Category</th> --}}
                             <th>Price</th>
                             <th>Discount</th>
+                            <th>Quiz</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,9 +43,12 @@
                             <td>{{ $key+1 }}</td>
                             <td><img src="{{ asset($item->course_image) }}" alt="" style="width: 70px; height: 40px;"></td>
                             <td>{{ $item->course_name }}</td>
-                            <td>{{ $item['category']['category_name'] }}</td>
+                            {{-- <td>{{ $item['category']['category_name'] }}</td> --}}
                             <td>{{ $item->selling_price }}</td>
                             <td>{{ $item->discount_price }}</td>
+                            <td>
+                                <a href="{{ route('all.quiz',$item->id) }}" class="btn btn-info" title="Add Quiz"><i class="lni lni-spellcheck"></i> </a>
+                            </td>
                             <td>
                                 <a href="{{ route('edit.course',$item->id) }}" class="btn btn-info" title="Edit"><i class="lni lni-eraser"></i> </a>
                                 <a href="{{ route('delete.course',$item->id) }}" class="btn btn-danger" title="Delete" id="delete"><i class="lni lni-trash"></i> </a>

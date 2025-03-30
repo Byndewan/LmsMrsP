@@ -86,13 +86,17 @@
                                 </ul>
                             </div>
                         </div><!-- end card -->
+
+
                         <div class="card card-item">
                             <div class="card-body">
                                 <h3 class="card-title fs-18 pb-2">Level</h3>
                                 <div class="divider"><span></span></div>
+
+
                                 <div class="custom-control custom-checkbox mb-1 fs-15">
-                                    <input type="checkbox" class="custom-control-input" id="levelCheckbox" required>
-                                    <label class="custom-control-label custom--control-label text-black" for="levelCheckbox">
+                                    <input type="checkbox" class="custom-control-input" id="levelCheckbox1" required>
+                                    <label class="custom-control-label custom--control-label text-black" for="levelCheckbox2">
                                         All Levels
                                     </label>
                                 </div><!-- end custom-control -->
@@ -114,8 +118,13 @@
                                         Advance
                                     </label>
                                 </div><!-- end custom-control -->
+
+
                             </div>
                         </div><!-- end card -->
+
+
+
                     </div><!-- end sidebar -->
                 </div><!-- end col-lg-4 -->
                 <div class="col-lg-8">
@@ -123,8 +132,6 @@
 
                         <div id="course_list"> <!-- Tempat daftar course awal -->
                             <div class="row">
-
-
 
                                 @foreach ($courses as $course)
                                 <div class="col-lg-4 responsive-column-half">
@@ -229,9 +236,6 @@
                                     </div><!-- end card -->
                                 </div>
                                 @endforeach
-
-
-
 
                             </div>
                         </div>

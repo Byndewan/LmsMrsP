@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2025 at 03:40 PM
+-- Generation Time: Mar 30, 2025 at 05:55 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.4
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -393,7 +393,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (23, '2025_03_10_064206_create_chat_messages_table', 17),
 (26, '2025_03_18_143317_create_testimonials_table', 18),
 (27, '2025_03_21_052516_create_comments_table', 19),
-(28, '2025_03_21_053325_create_replies_table', 19);
+(28, '2025_03_21_053325_create_replies_table', 19),
+(29, '2025_03_30_144647_create_quizzes_table', 20);
 
 -- --------------------------------------------------------
 
@@ -628,6 +629,31 @@ CREATE TABLE `questions` (
 INSERT INTO `questions` (`id`, `course_id`, `user_id`, `instructor_id`, `parent_id`, `subject`, `question`, `created_at`, `updated_at`) VALUES
 (1, 5, 3, 2, NULL, 'I need your help', 'plz check on my error', '2025-02-19 20:47:56', NULL),
 (2, 5, 3, 2, 1, NULL, 'okay let me see that', '2025-02-21 19:14:57', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quizzes`
+--
+
+CREATE TABLE `quizzes` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `question` varchar(255) NOT NULL,
+  `type` enum('pg_text','essay_text','pg_audio','essay_audio') NOT NULL,
+  `options` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`options`)),
+  `correct_answer` varchar(255) DEFAULT NULL,
+  `audio_path` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quizzes`
+--
+
+INSERT INTO `quizzes` (`id`, `course_id`, `question`, `type`, `options`, `correct_answer`, `audio_path`, `created_at`, `updated_at`) VALUES
+(1, 14, 'qweqweqw', 'essay_text', NULL, 'qweqweqw', NULL, '2025-03-30 08:20:03', '2025-03-30 08:42:35');
 
 -- --------------------------------------------------------
 
@@ -885,7 +911,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `address`, `role`, `status`, `last_seen`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412221500cat profile 2.jpg', '1234', 'Indonesia', 'admin', '1', '2025-03-21 04:45:59', NULL, NULL, '2025-03-20 21:45:59'),
-(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-03-18 05:47:13', NULL, '2025-02-04 07:11:01', '2025-03-17 22:47:13'),
+(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-03-30 15:55:06', NULL, '2025-02-04 07:11:01', '2025-03-30 08:55:06'),
 (3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-03-24 12:05:52', NULL, NULL, '2025-03-24 05:05:52'),
 (4, 'Onis', 'onis', 'onis@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '20241227150120240130_050807.jpg', '123', 'Korea', 'user', '1', '2025-03-22 08:49:05', NULL, '2024-12-19 05:30:18', '2025-03-22 01:49:05'),
 (5, 'Batu Karang', 'batukarang', 'batukarang@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '202412271447cat glasses.jpg', '0888', 'BBC', 'user', '1', NULL, NULL, '2024-12-25 04:13:09', '2024-12-27 07:49:12'),
@@ -1062,6 +1088,13 @@ ALTER TABLE `questions`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `quizzes`
+--
+ALTER TABLE `quizzes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `quizzes_course_id_foreign` (`course_id`);
+
+--
 -- Indexes for table `replies`
 --
 ALTER TABLE `replies`
@@ -1204,7 +1237,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -1235,6 +1268,12 @@ ALTER TABLE `personal_access_tokens`
 --
 ALTER TABLE `questions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `quizzes`
+--
+ALTER TABLE `quizzes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `replies`
@@ -1312,6 +1351,12 @@ ALTER TABLE `model_has_permissions`
 --
 ALTER TABLE `model_has_roles`
   ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quizzes`
+--
+ALTER TABLE `quizzes`
+  ADD CONSTRAINT `quizzes_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `replies`

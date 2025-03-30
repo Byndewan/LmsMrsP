@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 use App\Models\Category;
 // use App\Models\SubCategory;
@@ -14,11 +15,12 @@ use App\Models\Course_goal;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
-    public function AllCourse() 
+    public function AllCourse()
     {
         $id = Auth::user()->id;
         $courses = Course::where('instructor_id',$id)->orderBy('id','asc')->get();
@@ -69,13 +71,13 @@ class CourseController extends Controller
             'resources' => $request->resources,
             'certificate' => $request->certificate,
             'selling_price' => $request->selling_price,
-            'discount_price' => $request->discount_price, 
-            'prerequisite' => $request->prerequisite, 
-            'bestseller' => $request->bestseller, 
-            'featured' => $request->featured, 
-            'highestrated' => $request->highestrated, 
+            'discount_price' => $request->discount_price,
+            'prerequisite' => $request->prerequisite,
+            'bestseller' => $request->bestseller,
+            'featured' => $request->featured,
+            'highestrated' => $request->highestrated,
             'status' => 1,
-            'created_at' => Carbon::now(), 
+            'created_at' => Carbon::now(),
         ]);
 
         // Course Goals Add Form
@@ -135,11 +137,11 @@ class CourseController extends Controller
             'resources' => $request->resources,
             'certificate' => $request->certificate,
             'selling_price' => $request->selling_price,
-            'discount_price' => $request->discount_price, 
-            'prerequisite' => $request->prerequisite, 
-            'bestseller' => $request->bestseller, 
-            'featured' => $request->featured, 
-            'highestrated' => $request->highestrated, 
+            'discount_price' => $request->discount_price,
+            'prerequisite' => $request->prerequisite,
+            'bestseller' => $request->bestseller,
+            'featured' => $request->featured,
+            'highestrated' => $request->highestrated,
         ]);
 
         // Course Goals Add Form
@@ -179,7 +181,7 @@ class CourseController extends Controller
             'course_image' => $save_url,
             'updated_at' => Carbon::now(),
         ]);
-        
+
         $notification = array(
             'message' => 'Course Image Updated Successfully!',
             'alert-type' => 'success'
@@ -206,7 +208,7 @@ class CourseController extends Controller
             'video' => $save_video,
             'updated_at' => Carbon::now(),
         ]);
-        
+
         $notification = array(
             'message' => 'Course Video Updated Successfully!',
             'alert-type' => 'success'
@@ -225,13 +227,13 @@ class CourseController extends Controller
             Course_goal::where('course_id',$cid)->delete();
 
             $goals = Count($request->course_goals);
-            
+
                 for ($i=0; $i < $goals; $i++) {
                     $gcount = new Course_goal();
                     $gcount->course_id = $cid;
                     $gcount->goal_name = $request->course_goals[$i];
                     $gcount->save();
-                }  
+                }
         }
 
         $notification = array(
@@ -254,8 +256,8 @@ class CourseController extends Controller
         foreach ($goalsData as $item) {
             $item->goal_name;
             Course_goal::where('course_id',$id)->delete();
-        } 
-        
+        }
+
         $notification = array(
             'message' => 'Course Deleted Successfully!',
             'alert-type' => 'success'
@@ -352,8 +354,118 @@ class CourseController extends Controller
             'message' => 'Course Section Deleted Successfully!',
             'alert-type' => 'success'
         );
-    
+
             return redirect()->back()->with($notification);
+    }
+
+
+
+
+
+
+    public function AllQuiz($id)
+    {
+        $course = Course::findOrFail($id);
+        $quizzes = Quiz::where('course_id', $course->id)->orderBy('id', 'asc')->get();
+
+        return view('instructor.courses.quiz.all_quiz', compact('course', 'quizzes'));
+    }
+    
+    public function AddQuiz($id)
+    {
+        $categories = Category::latest()->get();
+
+        $course = Course::findOrFail($id);
+    
+        return view('instructor.courses.quiz.add_quiz', compact('categories', 'course'));
+    }
+
+    public function StoreQuiz(Request $request)
+    {
+
+        $request->merge([
+            'question' => $request->input('question_text') ?? $request->input('question_audio'),
+            'type' => $request->input('question_type'),
+            'correct_answer' => $request->input('answer')
+        ]);
+        
+
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'question' => 'required|string',
+            'type' => 'required|in:pg_text,essay_text,pg_audio,essay_audio',
+            'options' => 'nullable|array',
+            'correct_answer' => 'nullable|string',
+            'audio' => 'nullable|mimes:mp3,wav|max:2048',
+        ]);
+
+        // dd($request->all());
+
+        $audioPath = null;
+        if ($request->hasFile('audio')) {
+            $audioPath = $request->file('audio')->store('quizzes_audio', 'public');
+        }
+
+        Quiz::create([
+            'course_id' => $request->course_id,
+            'question' => $request->question,
+            'type' => $request->type,
+            'options' => $request->type == 'pg_text' || $request->type == 'pg_audio' ? json_encode($request->options) : null,
+            'correct_answer' => $request->correct_answer,
+            'audio_path' => $audioPath,
+        ]);
+
+        $notification = array(
+            'message' => 'Quiz added successfully!',
+            'alert-type' => 'success'
+        );
+
+        return redirect()->back()->with($notification);
+    }
+
+    public function EditQuiz($id)
+    {
+        $quiz = Quiz::findOrFail($id);
+        $categories = Category::latest()->get();
+        return view('instructor.courses.quiz.edit_quiz', compact('quiz', 'categories'));
+    }
+
+    public function UpdateQuiz(Request $request, $id)
+    {
+        $request->validate([
+            'question' => 'required|string',
+            'type' => 'required|in:pg_text,essay_text,pg_audio,essay_audio',
+            'correct_answer' => 'nullable|string',
+            'options' => 'nullable|array',
+            'audio' => 'nullable|mimes:mp3,wav|max:2048',
+        ]);
+    
+        $quiz = Quiz::findOrFail($id);
+    
+        if ($request->hasFile('audio')) {
+            Storage::delete('public/'.$quiz->audio_path);
+            $audioPath = $request->file('audio')->store('quizzes_audio', 'public');
+        } else {
+            $audioPath = $quiz->audio_path;
+        }
+    
+        $quiz->update([
+            'question' => $request->question,
+            'type' => $request->type,
+            'correct_answer' => $request->correct_answer,
+            'options' => in_array($request->type, ['pg_text', 'pg_audio']) ? json_encode($request->options) : null,
+            'audio_path' => $audioPath,
+        ]);
+    
+        return redirect()->route('all.quiz', $quiz->course_id)->with('message', 'Quiz updated successfully!');
+    }
+
+    public function DeleteQuiz($id)
+    {
+        $quiz = Quiz::findOrFail($id);
+        $quiz->delete();
+
+        return redirect()->back()->with('message', 'Quiz deleted successfully!');
     }
 
 }
