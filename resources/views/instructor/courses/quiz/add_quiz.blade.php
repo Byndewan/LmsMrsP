@@ -41,7 +41,7 @@
             
                 <div id="audio_question" class="form-group mt-3 d-none">
                     <label class="form-label">Upload Question (Audio)</label>
-                    <input type="file" name="question_audio" class="form-control" accept="audio/*">
+                    <input type="file" name="audio" class="form-control" accept="audio/*">
                 </div>
             
                 <div id="mcq_options" class="form-group mt-3 d-none">

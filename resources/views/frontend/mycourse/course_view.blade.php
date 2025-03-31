@@ -921,9 +921,9 @@
                                 @endforeach
                                 <div class="card">
                                     <div class="card-header" id="">
-                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="" aria-expanded="true" aria-controls="collapseOne">
+                                        <a href="{{ route('quiz.course',$course->id) }}" class="btn btn-link">
                                             <span class="fs-15">Quiz</span>
-                                        </button>
+                                        </a>
                                     </div><!-- end card-header -->
                                 </div><!-- end card -->
                             </div><!-- end accordion-->

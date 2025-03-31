@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Frontend\IndexController;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,3 +35,5 @@ Route::get('/courses/search', function (Request $request) {
 
     return response()->json($courses);
 });
+
+Route::get('/questions', [IndexController::class, 'getQuestions']);

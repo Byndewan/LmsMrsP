@@ -384,7 +384,7 @@ class CourseController extends Controller
     {
 
         $request->merge([
-            'question' => $request->input('question_text') ?? $request->input('question_audio'),
+            'question' => $request->input('question_text'),
             'type' => $request->input('question_type'),
             'correct_answer' => $request->input('answer')
         ]);
@@ -392,14 +392,12 @@ class CourseController extends Controller
 
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'question' => 'required|string',
+            'question' => 'nullable|string',
             'type' => 'required|in:pg_text,essay_text,pg_audio,essay_audio',
             'options' => 'nullable|array',
             'correct_answer' => 'nullable|string',
-            'audio' => 'nullable|mimes:mp3,wav|max:2048',
+            'audio' => 'nullable|mimes:mp3,wav',
         ]);
-
-        // dd($request->all());
 
         $audioPath = null;
         if ($request->hasFile('audio')) {

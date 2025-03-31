@@ -38,7 +38,7 @@
                         @foreach ($quizzes as $key => $quiz)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
-                                <td>{{ $quiz->question }}</td>
+                                <td>{{ $quiz->question ?? 'What do You Hear?' }}</td>
                                 <td>
                                     @if ($quiz->type == 'pg_text')
                                         <span class="btn btn-primary btn-sm">Pilihan Ganda Text</span>

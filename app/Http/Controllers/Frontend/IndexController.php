@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\SubCategory;
@@ -85,4 +86,15 @@ class IndexController extends Controller
     //     return response()->json($users);
     // }
 
+
+
+    public function QuizCourse() {
+        return view('frontend.quiz.index');
+    }
+
+    public function getQuestions()
+    {
+        $questions = Quiz::inRandomOrder()->take(4)->get(); // Ambil 4 soal random
+        return response()->json($questions);
+    }
 }

@@ -300,6 +300,12 @@ Route::middleware(['auth','roles:instructor'])->group(function(){
 // Route Accessable for All
 Route::get('/instructor/login', [InstructorController::class, 'InstructorLogin'])->name('instructor.login')->middleware(RedirectIfAuthenticated::class);
 Route::get('/course/details/{id}/{slug}', [IndexController::class, 'CourseDetails']);
+
+Route::get('/quiz/course/{id}', [IndexController::class, 'QuizCourse'])->name('quiz.course');
+
+
+
+
 Route::get('/category/{id}/{slug}', [IndexController::class, 'CategoryCourse']);
 Route::get('/category/all', [IndexController::class, 'CategoryAll'])->name('category.all');
 // Route::get('/funfact', [IndexController::class, 'Funfact']);
