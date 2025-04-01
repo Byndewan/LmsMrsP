@@ -29,6 +29,7 @@
                     <thead>
                         <tr>
                             <th>Sl</th>
+                            <th>Course</th>
                             <th>Quiz</th>
                             <th>Type</th>
                             <th>Action</th>
@@ -38,6 +39,7 @@
                         @foreach ($quizzes as $key => $quiz)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
+                                <td>{{ $quiz['course']['course_name'] }}</td>
                                 <td>{{ $quiz->question ?? 'What do You Hear?' }}</td>
                                 <td>
                                     @if ($quiz->type == 'pg_text')

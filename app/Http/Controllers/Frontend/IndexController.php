@@ -77,24 +77,19 @@ class IndexController extends Controller
         return view('frontend.instructor.instructor_details',compact('instructor','courses','student','review'));
     }
 
-    // public function SearchCourse(Request $request)
-    // {
-    //     $query = $request->input('query');
-
-    //     $users = Course::where('name', 'like', '%' . $query . '%')->get();
-
-    //     return response()->json($users);
-    // }
-
-
-
     public function QuizCourse() {
-        return view('frontend.quiz.index');
+
+        $questions = Quiz::all();
+        return view('frontend.quiz.index',compact('questions'));
+    }
+
+    public function QuizResult() {
+        return view('frontend.quiz.result');
     }
 
     public function getQuestions()
     {
-        $questions = Quiz::inRandomOrder()->take(4)->get(); // Ambil 4 soal random
+        $questions = Quiz::inRandomOrder()->take(30)->get();
         return response()->json($questions);
     }
 }

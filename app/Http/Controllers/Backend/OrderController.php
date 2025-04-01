@@ -23,6 +23,7 @@ use App\Models\Payment;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use App\Models\Question;
+use App\Models\Quiz;
 
 class OrderController extends Controller
 {
@@ -108,8 +109,10 @@ class OrderController extends Controller
         $course = Order::where('course_id',$course_id)->orderBy('id','asc')->first();
         $section = CourseSection::where('course_id',$course_id)->orderBy('id','asc')->get();
 
+        $quisCount = Quiz::count();
+
         $allquestion = Question::latest()->get();
 
-        return view('frontend.mycourse.course_view', compact('course','section','allquestion'));  
+        return view('frontend.mycourse.course_view', compact('course','section','allquestion','quisCount'));  
     }
 }

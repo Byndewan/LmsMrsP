@@ -28,7 +28,7 @@
                     <label class="mt-3">Upload Question (Audio)</label>
                     <input type="file" name="audio" class="form-control" accept="audio/*">
                     @if($quiz->audio_path)
-                        <p>Current Audio: <a href="{{ asset('storage/'.$quiz->audio_path) }}" target="_blank">Listen</a></p>
+                        <p>Current Audio: <a href="{{ asset($quiz->audio_path) }}" target="_blank">Listen</a></p>
                     @endif
                 </div>
                 

@@ -15,6 +15,7 @@ use App\Models\Course_goal;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -399,9 +400,13 @@ class CourseController extends Controller
             'audio' => 'nullable|mimes:mp3,wav',
         ]);
 
-        $audioPath = null;
+        $audioUrl = null;
         if ($request->hasFile('audio')) {
-            $audioPath = $request->file('audio')->store('quizzes_audio', 'public');
+            $audioFile = $request->file('audio');
+            $audioName = $audioFile->hashName();
+
+            $audioFile->move(public_path('quizzes_audio'), $audioName);
+            $audioUrl = url('quizzes_audio/' . $audioName);
         }
 
         Quiz::create([
@@ -410,7 +415,7 @@ class CourseController extends Controller
             'type' => $request->type,
             'options' => $request->type == 'pg_text' || $request->type == 'pg_audio' ? json_encode($request->options) : null,
             'correct_answer' => $request->correct_answer,
-            'audio_path' => $audioPath,
+            'audio_path' => $audioUrl,
         ]);
 
         $notification = array(
@@ -430,33 +435,53 @@ class CourseController extends Controller
 
     public function UpdateQuiz(Request $request, $id)
     {
+
+        // dd($request->all());
+
         $request->validate([
-            'question' => 'required|string',
+            'question' => 'nullable|string',
             'type' => 'required|in:pg_text,essay_text,pg_audio,essay_audio',
             'correct_answer' => 'nullable|string',
             'options' => 'nullable|array',
-            'audio' => 'nullable|mimes:mp3,wav|max:2048',
+            'audio' => 'nullable|mimes:mp3,wav',
         ]);
     
         $quiz = Quiz::findOrFail($id);
     
         if ($request->hasFile('audio')) {
-            Storage::delete('public/'.$quiz->audio_path);
-            $audioPath = $request->file('audio')->store('quizzes_audio', 'public');
+            if ($quiz->audio_path) {
+                $oldAudioPath = public_path('quizzes_audio/' . $quiz->audio_path);
+                if (File::exists($oldAudioPath)) {
+                    File::delete($oldAudioPath);
+                }
+            }
+        
+            $audioFile = $request->file('audio');
+            $audioName = $audioFile->hashName();
+            $audioPath = $audioFile->move(public_path('quizzes_audio'), $audioName); 
+
+            $audioUrl = url('quizzes_audio/' . $audioName);
         } else {
-            $audioPath = $quiz->audio_path;
+            $audioUrl = $quiz->audio_path;
         }
     
+        
+
         $quiz->update([
             'question' => $request->question,
             'type' => $request->type,
             'correct_answer' => $request->correct_answer,
             'options' => in_array($request->type, ['pg_text', 'pg_audio']) ? json_encode($request->options) : null,
-            'audio_path' => $audioPath,
+            'audio_path' => $audioUrl,
         ]);
+
+        $notification = array(
+            'message' => 'Quiz updated successfully!',
+            'alert-type' => 'info'
+        );
     
-        return redirect()->route('all.quiz', $quiz->course_id)->with('message', 'Quiz updated successfully!');
-    }
+        return redirect()->route('all.quiz', $quiz->course_id)->with($notification);
+    }   
 
     public function DeleteQuiz($id)
     {
