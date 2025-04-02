@@ -78,18 +78,17 @@ class IndexController extends Controller
     }
 
     public function QuizCourse() {
-
         $questions = Quiz::all();
         return view('frontend.quiz.index',compact('questions'));
     }
 
-    public function QuizResult() {
-        return view('frontend.quiz.result');
+    public function QuizResult($score, $total) {
+        return view('frontend.quiz.result', compact('score', 'total'));
     }
 
     public function getQuestions()
     {
-        $questions = Quiz::inRandomOrder()->take(30)->get();
+        $questions = Quiz::orderBy('id','asc')->take(4)->get();
         return response()->json($questions);
     }
 }

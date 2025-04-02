@@ -219,8 +219,12 @@
         <div class="line"></div>
         <div class="navigation">
             <button class="back" id="back">&#8592; Back</button>
-            <button class="next" id="next" onclick="nextQuestion()">Next &#8594;</button>
+            <button class="next" id="next">Next &#8594;</button>
+            <button id="finish-button" style="display: none;">Finish</button>
         </div>
+
+        <div id="result-container" style="display: none;"></div>
+
     </div>
 </body>
 
@@ -230,15 +234,31 @@
         const audioIcon = document.getElementById("audio-icon");
         let correctAnswers = 0;
         let wrongAnswers = 0;
-        let currentQuestionIndex = 0;
         let totalQuestions = 4;
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const nextButton = document.getElementById("next");
+        const finishButton = document.getElementById("finish-button");
+        const resultContainer = document.getElementById("result-container");
+
+
+
+        
+
+
 
         document.addEventListener("DOMContentLoaded", async function () {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/questions");
                 let questions = response.data;
+                let totalQuestions = 4;
                 let currentQuestionIndex = 0;
-                let totalQuestions = questions.length;
+                let score = 0;
+                const nextButton = document.getElementById("next");
+                const finishButton = document.getElementById("finish-button");
+                const resultContainer = document.getElementById("result-container");
+                const questionTypes = ['pg_text', 'pg_audio', 'essay_text', 'essay_audio'];
+                const availableQuestions = questions.sort((a, b) => questionTypes.indexOf(a.type) - questionTypes.indexOf(b.type));
 
                 function updateProgressBar() {
                     const progressBar = document.getElementById("progress");
@@ -256,25 +276,56 @@
                     const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
                     progressBar.style.width = `${progressPercentage}%`;
                 }
+                
+                nextButton.addEventListener("click", function () {
+                        if (currentQuestionIndex < questions.length - 1) {
+                            currentQuestionIndex++;
+                            loadQuestion(questions[currentQuestionIndex]);
+                            updateQuestionNumber();
+                        } else {
+                            window.location.href = "/quiz/result/" + correctAnswers + "/" + questions.length;
+                        }
+                    });
+                
+                function checkAnswer(selectedAnswer) {
+                    async function fetchQuestions() {
+                        const response = await axios.get("http://127.0.0.1:8000/api/questions");
+                        questions = response.data;
+                        let correctAnswer = questions[currentQuestionIndex].correct_answer;
+                        
+                        if (selectedAnswer === correctAnswer) {
+                            correctAnswers++;
+                        } else {
+                            wrongAnswers++;
+                        }
 
-                document.getElementById("next").addEventListener("click", () => {
-                    if (currentQuestionIndex < totalQuestions - 1) {
-                        currentQuestionIndex++;
-                        loadQuestion(questions[currentQuestionIndex]);
-                        updateProgressBar();
+                        
                     }
+                }
+
+
+
+                
+                // function checkAnswer(selectedAnswer) {
+                //     let correctAnswer = questions[currentQuestionIndex].correct; 
+                    
+                //     selectedOption.parentNode.querySelectorAll(".option").forEach(opt => {
+                //         opt.classList.remove("selected");
+                //     });
+                //     selectedOption.classList.add("selected");
+                    
+                //     if (selectedAnswer === correctAnswer) {
+                //         score++;
+                //     }
+                // }
+
+                document.querySelectorAll(".option").forEach(option => {
+                    option.addEventListener("click", checkAnswer);
                 });
 
-                document.getElementById("back").addEventListener("click", () => {
-                    if (currentQuestionIndex > 0) {
-                        currentQuestionIndex--;
-                        loadQuestion(questions[currentQuestionIndex]);
-                        updateProgressBar();
-                    }
-                });
 
-                const questionTypes = ['pg_text', 'pg_audio', 'essay_text', 'essay_audio'];
-                const availableQuestions = questions.sort((a, b) => questionTypes.indexOf(a.type) - questionTypes.indexOf(b.type));
+
+
 
                 if (availableQuestions.length > 0) {
                     const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
@@ -427,41 +478,10 @@
                 }
             }
 
-            const nextButton = document.getElementById('next-button');
-            if (currentQuestionIndex === questions.length - 1) {
-                nextButton.innerHTML = 'Finish';
-            } else {
-                nextButton.innerHTML = 'Next';
-            }
-
             updateQuestionNumber();
         }
 
-        function checkAnswer(selectedAnswer, correctAnswer) {
-            document.addEventListener("DOMContentLoaded", async function () {
-                const response = await axios.get("http://127.0.0.1:8000/api/questions");
-                let questions = response.data;
-                let id = questions.id;
-
-                if (selectedAnswer === correctAnswer) {
-                    correctAnswers++;
-                } else {
-                    wrongAnswers++;
-                }
-
-
-                if (currentQuestionIndex < totalQuestions - 1) {
-                    currentQuestionIndex++;
-                    loadQuestion(questions[currentQuestionIndex]);
-                } else {
-                    document.getElementById("next").textContent = "Finish";
-                    document.getElementById("next").onclick = function () {
-                        console.log("Tombol Next sudah diklik!");
-                        window.location.href = `/quiz/result/${id}`;
-                    };
-                }
-            });
-        }
+        loadQuestion(currentQuestionIndex);
 
         let lastSelected = null;
 
@@ -475,4 +495,5 @@
             lastSelected = element;
         }
     </script>
+
 </html>

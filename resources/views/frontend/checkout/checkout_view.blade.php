@@ -79,6 +79,10 @@
                                     <input checked="" id="bankTransfer" name="cash_delivery" type="radio" value="stripe">
                                     <label for="bankTransfer">Stripe Payment</label>
                                 </div>
+                                <div class="payment-tab-toggle">
+                                    <input checked="" id="bankTransfer" name="cash_delivery" type="radio" value="midtrans">
+                                    <label for="bankTransfer">Indo Payment</label>
+                                </div>
                             </div><!-- end payment-tab -->
                         </div>
                     </div><!-- end card-body -->

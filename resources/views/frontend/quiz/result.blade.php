@@ -1,27 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Result Quiz</title>
-</head>
-<body>
+@extends('frontend.master')
+
+@section('home')
+
+<style>
+    .container-result {
+        justify-self: center;
+        align-self: center;
+        text-align: center;
+        margin:80px;
+        padding:80px;
+    }
+
+    .container-result h2 {
+        font-size: 50px;
+    }
+
+    .container-result p {
+        font-size: 20px;
+    }
+
+    .container-result a {
+        padding: 10px;
+        font-weight: bold;
+    }
+
     
-    <div id="result">
+
+</style>
+
+    <div class="container-result">
+        <h2 class="mb-3">Hasil Kuis</h2>
+        <p class="mb-3 mt-3">Skor Anda: {{ $score }} dari {{ $total }}</p>
+        <a href="{{ route('index') }}" class="btn btn-primary">Back to home</a>
     </div>
-
-</body>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const result = document.getElementById("result");
-    result.innerHTML = `
-        <h1>Results</h1>
-        <p>Correct Answers: ${correctAnswers}</p>
-        <p>Wrong Answers: ${wrongAnswers}</p>
-    `;
-});
-</script>
-
-</html>
+@endsection

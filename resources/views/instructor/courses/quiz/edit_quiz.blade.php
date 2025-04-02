@@ -65,11 +65,11 @@
             document.getElementById("text_question").classList.toggle("d-none", !type.includes("text"));
             document.getElementById("audio_question").classList.toggle("d-none", !type.includes("audio"));
             document.getElementById("mcq_options").classList.toggle("d-none", !type.startsWith("pg"));
-            document.getElementById("correct_answer").classList.toggle("d-none", type === "essay_audio");
+            document.getElementById("correct_answer").classList.toggle("d-none", !type.startsWith("essay_audio"));
         }
     
         document.getElementById("type").addEventListener("change", toggleFields);
-        toggleFields(); // Panggil saat halaman dimuat
+        toggleFields();
     
         document.querySelector(".add_option").addEventListener("click", function () {
             let container = document.getElementById("options_container");

@@ -302,7 +302,8 @@ Route::get('/instructor/login', [InstructorController::class, 'InstructorLogin']
 Route::get('/course/details/{id}/{slug}', [IndexController::class, 'CourseDetails']);
 
 Route::get('/quiz/course/{id}', [IndexController::class, 'QuizCourse'])->name('quiz.course');
-Route::get('/quiz/result/{id}', [IndexController::class, 'QuizResult'])->name('quiz.result');
+Route::get('/quiz/result/{score}/{total}', [IndexController::class, 'QuizResult'])->name('quiz.result');
+
 
 
 
