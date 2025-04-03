@@ -14,6 +14,11 @@
                 </ol>
             </nav>
         </div>
+        <div class="ms-auto">
+            <div class="btn-group">
+                <a href="{{ route('all.quiz',$course->id) }}" class="btn btn-primary px-5">Back</a>
+            </div>
+        </div>
     </div>
 
     <div class="card">

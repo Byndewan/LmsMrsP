@@ -158,7 +158,7 @@
         }
         .navigation {
             display: flex;
-            justify-content: space-between;
+            justify-content: end;
             margin-top: 50px;
             width: 80%;
             justify-self: center;
@@ -212,18 +212,14 @@
         <div class="progress-bar">
             <div class="progress" id="progress"></div>
         </div>
-        <p class="question-number">Question <span id="current-question">1</span> from <span id="total-questions">30</span></p>
+        <p class="question-number">Question <span id="current-question">1</span> from <span id="total-questions">0</span></p>
         <div id="quiz-container">
             
         </div>
         <div class="line"></div>
         <div class="navigation">
-            <button class="back" id="back">&#8592; Back</button>
-            <button class="next" id="next">Next &#8594;</button>
-            <button id="finish-button" style="display: none;">Finish</button>
+            <button class="next" id="submit-answer">Next &#8594;</button>
         </div>
-
-        <div id="result-container" style="display: none;"></div>
 
     </div>
 </body>
@@ -234,122 +230,53 @@
         const audioIcon = document.getElementById("audio-icon");
         let correctAnswers = 0;
         let wrongAnswers = 0;
-        let totalQuestions = 4;
-        let currentQuestionIndex = 0;
         let score = 0;
-        const nextButton = document.getElementById("next");
-        const finishButton = document.getElementById("finish-button");
-        const resultContainer = document.getElementById("result-container");
-
+        let answered = false;
 
 
         
 
-
-
         document.addEventListener("DOMContentLoaded", async function () {
             try {
                 const response = await axios.get("http://127.0.0.1:8000/api/questions");
-                let questions = response.data;
-                let totalQuestions = 4;
-                let currentQuestionIndex = 0;
+                questions = Object.values(response.data);
+                totalQuestions = questions.length;
+                currentQuestionIndex = 0;
                 let score = 0;
-                const nextButton = document.getElementById("next");
-                const finishButton = document.getElementById("finish-button");
-                const resultContainer = document.getElementById("result-container");
-                const questionTypes = ['pg_text', 'pg_audio', 'essay_text', 'essay_audio'];
-                const availableQuestions = questions.sort((a, b) => questionTypes.indexOf(a.type) - questionTypes.indexOf(b.type));
-
-                function updateProgressBar() {
-                    const progressBar = document.getElementById("progress");
-
-                    if (!progressBar) {
-                        console.error("Elemen progress bar tidak ditemukan!");
-                        return;
-                    }
-
-                    if (totalQuestions === 0) {
-                        console.warn("Total pertanyaan = 0, progress bar tidak bisa diperbarui.");
-                        return;
-                    }
-
-                    const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-                    progressBar.style.width = `${progressPercentage}%`;
-                }
                 
-                nextButton.addEventListener("click", function () {
-                        if (currentQuestionIndex < questions.length - 1) {
-                            currentQuestionIndex++;
-                            loadQuestion(questions[currentQuestionIndex]);
-                            updateQuestionNumber();
-                        } else {
-                            window.location.href = "/quiz/result/" + correctAnswers + "/" + questions.length;
-                        }
-                    });
-                
-                function checkAnswer(selectedAnswer) {
-                    async function fetchQuestions() {
-                        const response = await axios.get("http://127.0.0.1:8000/api/questions");
-                        questions = response.data;
-                        let correctAnswer = questions[currentQuestionIndex].correct_answer;
-                        
-                        if (selectedAnswer === correctAnswer) {
-                            correctAnswers++;
-                        } else {
-                            wrongAnswers++;
-                        }
 
-                        
-                    }
+                if (Array.isArray(questions)) {
+                    totalQuestions = questions.length;
+                } else {
+                    console.error("Data 'questions' bukan array!");
                 }
 
 
-
-                
-                // function checkAnswer(selectedAnswer) {
-                //     let correctAnswer = questions[currentQuestionIndex].correct; 
-                    
-                //     selectedOption.parentNode.querySelectorAll(".option").forEach(opt => {
-                //         opt.classList.remove("selected");
-                //     });
-                //     selectedOption.classList.add("selected");
-                    
-                //     if (selectedAnswer === correctAnswer) {
-                //         score++;
-                //     }
-                // }
-
-                document.querySelectorAll(".option").forEach(option => {
-                    option.addEventListener("click", checkAnswer);
-                });
-
-
-
-
-
-                if (availableQuestions.length > 0) {
-                    const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-                    loadQuestion(randomQuestion);
+                if (totalQuestions > 0) {
+                    loadQuestion(questions[currentQuestionIndex]);
                     updateProgressBar();
                 } else {
-                    console.warn("Tidak ada soal yang cocok dengan tipe yang tersedia!");
+                    console.warn("Tidak ada soal yang tersedia!");
                 }
             } catch (error) {
                 console.error("Gagal mengambil soal!", error.response ? error.response.data : error.message);
             }
         });
 
-        function updateQuestionNumber() {
-            document.getElementById("current-question").textContent = currentQuestionIndex + 1;
-            document.getElementById("total-questions").textContent = totalQuestions;
-        }
 
-        function loadQuestion(randomQuestion) {
+        function loadQuestion(question) {
             const container = document.getElementById("quiz-container");
-            container.innerHTML = "";
+            container.innerHTML = ""
 
-            if (randomQuestion.type === "essay_audio") {
-                let audioPath = randomQuestion.audio_path;
+            setTimeout(function () {
+                const textarea = container.querySelector('.answer-box');
+                if (textarea) {
+                    console.log("Textarea ditemukan!");
+                }
+            }, 100);
+
+            if (question.type === "essay_audio") {
+                let audioPath = question.audio_path;
                 let audioElement = audioPath ? `<audio id="question-audio" src="${audioPath}"></audio>` : "";
 
                 container.innerHTML = `
@@ -365,10 +292,10 @@
                         </button>
                         <h2 class="question-essay">What Do You Hear?</h2>
                     </div>
-                    <textarea class="answer-box" rows="4" placeholder="Write your answer"></textarea>
+                    <textarea class="answer-box" id="essay-answer" placeholder="Write your answer"></textarea>
                 `;
 
-                // Tambahkan event listener untuk tombol play/pause
+                
                 let playButton = document.getElementById("play-audio");
                 let audio = document.getElementById("question-audio");
                 let audioIcon = document.getElementById("audio-icon");
@@ -395,42 +322,52 @@
                 } else {
                     playButton.disabled = true;
                 }
-            } else if (randomQuestion.type === "pg_text") {
+            } else if (question.type === "pg_text") {
                 let options = [];
                 
-                if (randomQuestion.options) {
+                if (question.options) {
                     try {
-                        options = JSON.parse(randomQuestion.options); 
+                        options = JSON.parse(question.options); 
                     } catch (error) {
                         console.error("Gagal parse options:", error);
                     }
                 }
 
                 container.innerHTML = `
-                    <h2 class="question">${randomQuestion.question}</h2>
+                    <h2 class="question">${question.question}</h2>
                     <div class="options">
                         ${options.map((option, index) => `
-                            <button class="option" onclick="selectOption(this)" onclick="checkAnswer('${option}', '${randomQuestion.correct_answer}')">
-                                <span class="button-text">${option}</span>
-                            </button>
+                           <button class="option" onclick="selectOption(this)"><span class="button-text">${option}</span></button>
                         `).join("")}
                     </div>
                 `;
-            } else if (randomQuestion.type === "essay_text") {
+
+                document.querySelectorAll(".option").forEach(button => {
+                    button.addEventListener("click", function () {
+                        checkAnswer(button.textContent);
+                    });
+                });
+
+                setTimeout(function () {
+                    const textarea = container.querySelector('.answer-box');
+                    if (textarea) {
+                        console.log("Textarea ditemukan!");
+                    }
+                }, 100);
+
+            } else if (question.type === "essay_text") {
                 container.innerHTML = `
-                    <h2 class="question">${randomQuestion.question}</h2>
-                    <textarea class="answer-box" placeholder="Write your answer"></textarea>
+                    <h2 class="question">${question.question}</h2>
+                    <textarea class="answer-box" id="essay-answer" placeholder="Write your answer"></textarea>
                 `;
-            } else if (randomQuestion.type === "pg_audio") {
-                let audioPath = randomQuestion.audio_path;
-                let options = JSON.parse(randomQuestion.options || "[]");
+            } else if (question.type === "pg_audio") {
+                let audioPath = question.audio_path;
+                let options = JSON.parse(question.options || "[]");
 
                 let audioElement = audioPath ? `<audio id="question-audio" src="${audioPath}"></audio>` : "";
 
                 let optionsHTML = options.map((option, index) => `
-                    <button class="option" onclick="selectOption(this)" onclick="checkAnswer('${option}', '${randomQuestion.correct_answer}')">
-                        <span class="button-text">${option}</span>
-                    </button>
+                    <button class="option" onclick="selectOption(this)"><span class="button-text">${option}</span></button>
                 `).join("");
 
                 container.innerHTML = `
@@ -450,6 +387,12 @@
                         ${optionsHTML}
                     </div>
                 `;
+
+                document.querySelectorAll(".option").forEach(button => {
+                    button.addEventListener("click", function () {
+                        checkAnswer(button.textContent);
+                    });
+                });
 
                 let playButton = document.getElementById("play-audio");
                 let audio = document.getElementById("question-audio");
@@ -481,7 +424,192 @@
             updateQuestionNumber();
         }
 
-        loadQuestion(currentQuestionIndex);
+
+
+
+        document.querySelectorAll(".option").forEach(option => {
+            option.addEventListener("click", checkAnswer);
+        });
+
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById("progress");
+
+            if (!progressBar) {
+                console.error("Elemen progress bar tidak ditemukan!");
+                return;
+            }
+
+            if (totalQuestions === 0) {
+                console.warn("Total pertanyaan = 0, progress bar tidak bisa diperbarui.");
+                return;
+            }
+
+            const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector(".next").addEventListener("click", nextQuestion);
+        });
+
+
+        function getSelectedAnswer() {
+            let currentQuestion = questions[currentQuestionIndex];
+
+            if (currentQuestion.type === "essay_text" || currentQuestion.type === "essay_audio") {
+                let textarea = document.querySelector(".answer-box");
+                
+                // if (textarea) {
+                //     selectedAnswer = textarea.value.trim();
+                // }
+
+                let answer = textarea.value;
+                
+                if (answer.length === 0) {
+                    console.warn("⚠️ Textarea kosong! Jawaban tidak akan dihitung.");
+                    return "";
+                }
+
+                console.log("✅ Jawaban dari textarea:", answer);
+                return answer;
+
+            } else {
+                let selectedOption = document.querySelector(".option.selected");
+                return selectedOption ? selectedOption.textContent.trim() : "";
+            }
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let button = document.getElementById("submit-answer");
+
+            if (button) {
+                button.addEventListener("click", function () {
+                    let selectedAnswer = "";
+
+                    let currentQuestion = questions[currentQuestionIndex];
+
+                    if (currentQuestion.type === "pg_text") {
+                        let selectedOption = document.querySelector(".option.selected");
+                        if (selectedOption) {
+                            selectedAnswer = selectedOption.textContent.trim();
+                        }
+                    } 
+                    else if (currentQuestion.type === "essay_text" || currentQuestion.type === "essay_audio") {
+                        let textarea = document.querySelector(".answer-box");
+                        if (textarea) {
+                            selectedAnswer = textarea.value.trim();
+                        }
+                    }
+
+                    if (selectedAnswer === "") {
+                        console.warn("⚠️ Jawaban kosong! Jawaban tidak akan dihitung.");
+                    } else {
+                        console.log("Jawaban sedang diperiksa!");
+                        checkAnswer(selectedAnswer);
+                    }
+
+                    answered = false;
+                });
+            } else {
+                console.log("❌ ERROR: Button tidak ditemukan!");
+            }
+        });
+
+
+
+        function isCurrentQuestionAnswered() {
+            const currentQuestion = questions[currentQuestionIndex];
+            console.log("Memeriksa soal:", currentQuestion);
+
+            if (currentQuestion.type === "essay_text" || currentQuestion.type === "essay_audio") {
+                const answerBox = document.querySelector('.answer-box');
+                console.log("Jawaban Essay:", answerBox.value);
+                checkAnswer(answerBox.value);
+                return answerBox && answerBox.value !== "";
+            }
+
+            if (currentQuestion.type === "pg_text" || currentQuestion.type === "pg_audio") {
+                const selectedOption = document.querySelector('.option.selected');
+                console.log("Opsi yang dipilih:", selectedOption);
+                return selectedOption !== null;
+
+                answered=false
+            }
+
+            return true;
+        }
+
+
+
+
+        function checkAnswer(selectedAnswer) {
+
+            if (answered) {
+                console.log("Soal ini sudah dijawab, tidak perlu dihitung lagi.");
+                return;
+            }
+
+            answered = true;
+
+            if (!questions[currentQuestionIndex]) {
+                console.error("Pertanyaan tidak ditemukan!");
+                return;
+            }
+
+            let correctAnswer = questions[currentQuestionIndex].correct_answer;
+
+            console.log(`🔍 Jawaban: ${selectedAnswer}, Benar: ${correctAnswer}`);
+
+            if (selectedAnswer === correctAnswer) {
+                correctAnswers++;
+                console.log("✅ Jawaban benar! Skor bertambah.");
+            } else {
+                wrongAnswers++;
+                console.log("❌ Jawaban salah!");
+            }
+
+        }
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".option").forEach(option => {
+                option.addEventListener("click", function () {
+                    let selectedAnswer = this.textContent.trim();
+                    checkAnswer(selectedAnswer);
+                });
+            });
+        });
+
+
+        function nextQuestion() {
+
+            answered = false;
+
+            if (isCurrentQuestionAnswered()) {
+                if (currentQuestionIndex < questions.length - 1) {
+                    currentQuestionIndex++;
+                    loadQuestion(questions[currentQuestionIndex]);
+                    updateProgressBar();
+                } else {
+                    window.location.href = `/quiz/result/${correctAnswers}/${questions.length}`;
+                }
+            } else {
+                alert("Silakan jawab soal ini sebelum melanjutkan.");
+            }
+        }
+
+
+        function updateQuestionNumber() {
+            document.getElementById("current-question").textContent = currentQuestionIndex + 1;
+            document.getElementById("total-questions").textContent = totalQuestions;
+        }
+
+        
+
 
         let lastSelected = null;
 

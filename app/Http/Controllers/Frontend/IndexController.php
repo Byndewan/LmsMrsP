@@ -88,7 +88,15 @@ class IndexController extends Controller
 
     public function getQuestions()
     {
-        $questions = Quiz::orderBy('id','asc')->take(4)->get();
+        $questions = Quiz::all();
+
+        $questionTypes = ['pg_text', 'pg_audio', 'essay_text', 'essay_audio'];
+        
+        $questions = $questions->sortBy(function ($question) use ($questionTypes) {
+            return array_search($question->type, $questionTypes);
+        });
+
         return response()->json($questions);
     }
+
 }
