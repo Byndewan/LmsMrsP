@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 30, 2025 at 05:55 PM
+-- Generation Time: Apr 04, 2025 at 02:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -394,7 +394,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (26, '2025_03_18_143317_create_testimonials_table', 18),
 (27, '2025_03_21_052516_create_comments_table', 19),
 (28, '2025_03_21_053325_create_replies_table', 19),
-(29, '2025_03_30_144647_create_quizzes_table', 20);
+(29, '2025_03_30_144647_create_quizzes_table', 20),
+(30, '2025_04_04_003912_create_quiz_results_table', 21),
+(31, '2025_04_04_075836_create_table_quiz_results_table', 22);
 
 -- --------------------------------------------------------
 
@@ -639,7 +641,7 @@ INSERT INTO `questions` (`id`, `course_id`, `user_id`, `instructor_id`, `parent_
 CREATE TABLE `quizzes` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `course_id` bigint(20) UNSIGNED NOT NULL,
-  `question` varchar(255) NOT NULL,
+  `question` varchar(255) DEFAULT NULL,
   `type` enum('pg_text','essay_text','pg_audio','essay_audio') NOT NULL,
   `options` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`options`)),
   `correct_answer` varchar(255) DEFAULT NULL,
@@ -653,7 +655,40 @@ CREATE TABLE `quizzes` (
 --
 
 INSERT INTO `quizzes` (`id`, `course_id`, `question`, `type`, `options`, `correct_answer`, `audio_path`, `created_at`, `updated_at`) VALUES
-(1, 14, 'qweqweqw', 'essay_text', NULL, 'qweqweqw', NULL, '2025-03-30 08:20:03', '2025-03-30 08:42:35');
+(7, 14, '1 + 12 berapa???', 'pg_text', '\"[\\\"3\\\",\\\"2\\\",\\\"13\\\"]\"', '13', NULL, '2025-03-31 21:14:10', '2025-03-31 21:14:10'),
+(8, 14, 'sedia payung sebelum .....', 'essay_text', NULL, '12', NULL, '2025-03-31 21:14:59', '2025-04-01 23:09:40'),
+(9, 14, NULL, 'pg_audio', '\"[\\\"12\\\",\\\"13\\\",\\\"11\\\"]\"', '12', 'http://127.0.0.1:8000/quizzes_audio/nsuqfMzd46QMbjxPav6MSmWCXfle3PCV9ZvRqyWN.mp3', '2025-03-31 21:15:19', '2025-04-01 23:09:50'),
+(10, 14, NULL, 'essay_audio', NULL, '12', 'http://127.0.0.1:8000/quizzes_audio/SnuFhS50ZLt0IKjfRLj73EGPHyuCof0kAMhePOSn.mp3', '2025-03-31 21:15:28', '2025-04-01 22:36:40'),
+(11, 14, '3', 'pg_text', '\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"', '3', NULL, '2025-04-03 01:10:28', '2025-04-03 01:10:28'),
+(12, 14, '2', 'pg_text', '\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"', '2', NULL, '2025-04-03 01:10:42', '2025-04-03 01:10:42'),
+(13, 14, '1', 'pg_text', '\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"', '1', NULL, '2025-04-03 01:10:53', '2025-04-03 01:10:53'),
+(14, 14, '333', 'pg_text', '\"[\\\"111\\\",\\\"222\\\",\\\"333\\\"]\"', '333', NULL, '2025-04-03 01:11:15', '2025-04-03 01:11:15'),
+(15, 14, '222', 'pg_text', '\"[\\\"111\\\",\\\"222\\\",\\\"333\\\"]\"', '222', NULL, '2025-04-03 01:11:27', '2025-04-03 01:11:27'),
+(16, 14, '111', 'pg_text', '\"[\\\"111\\\",\\\"223\\\",\\\"333\\\"]\"', '111', NULL, '2025-04-03 01:11:38', '2025-04-03 01:11:38');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quiz_results`
+--
+
+CREATE TABLE `quiz_results` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `course_id` bigint(20) UNSIGNED NOT NULL,
+  `correct_answers` int(11) NOT NULL,
+  `wrong_answers` int(11) NOT NULL,
+  `score` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `quiz_results`
+--
+
+INSERT INTO `quiz_results` (`id`, `user_id`, `course_id`, `correct_answers`, `wrong_answers`, `score`, `created_at`, `updated_at`) VALUES
+(2, 3, 14, 2, 6, 80, '2025-04-04 04:19:37', '2025-04-04 04:19:37');
 
 -- --------------------------------------------------------
 
@@ -911,8 +946,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `address`, `role`, `status`, `last_seen`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412221500cat profile 2.jpg', '1234', 'Indonesia', 'admin', '1', '2025-03-21 04:45:59', NULL, NULL, '2025-03-20 21:45:59'),
-(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-03-30 15:55:06', NULL, '2025-02-04 07:11:01', '2025-03-30 08:55:06'),
-(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-03-24 12:05:52', NULL, NULL, '2025-03-24 05:05:52'),
+(2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-04-03 12:49:17', NULL, '2025-02-04 07:11:01', '2025-04-03 05:49:17'),
+(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-04-04 11:56:50', NULL, NULL, '2025-04-04 04:56:50'),
 (4, 'Onis', 'onis', 'onis@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '20241227150120240130_050807.jpg', '123', 'Korea', 'user', '1', '2025-03-22 08:49:05', NULL, '2024-12-19 05:30:18', '2025-03-22 01:49:05'),
 (5, 'Batu Karang', 'batukarang', 'batukarang@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '202412271447cat glasses.jpg', '0888', 'BBC', 'user', '1', NULL, NULL, '2024-12-25 04:13:09', '2024-12-27 07:49:12'),
 (6, 'Azlia', 'azlia', 'azlia@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', NULL, '0881', 'Indonesia', 'instructor', '1', NULL, NULL, NULL, '2025-02-17 20:14:00'),
@@ -946,7 +981,8 @@ INSERT INTO `wishlists` (`id`, `user_id`, `course_id`, `created_at`, `updated_at
 (9, 1, 19, '2025-03-17 00:09:49', NULL),
 (10, 1, 16, '2025-03-17 00:10:33', NULL),
 (11, 3, 18, '2025-03-17 00:19:32', NULL),
-(12, 3, 17, '2025-03-17 00:21:01', NULL);
+(12, 3, 17, '2025-03-17 00:21:01', NULL),
+(13, 3, 22, '2025-04-01 04:12:01', NULL);
 
 --
 -- Indexes for dumped tables
@@ -1095,6 +1131,14 @@ ALTER TABLE `quizzes`
   ADD KEY `quizzes_course_id_foreign` (`course_id`);
 
 --
+-- Indexes for table `quiz_results`
+--
+ALTER TABLE `quiz_results`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `table_quiz_results_user_id_foreign` (`user_id`),
+  ADD KEY `table_quiz_results_course_id_foreign` (`course_id`);
+
+--
 -- Indexes for table `replies`
 --
 ALTER TABLE `replies`
@@ -1237,7 +1281,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `orders`
@@ -1273,7 +1317,13 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `quizzes`
 --
 ALTER TABLE `quizzes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `quiz_results`
+--
+ALTER TABLE `quiz_results`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `replies`
@@ -1327,7 +1377,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
@@ -1357,6 +1407,13 @@ ALTER TABLE `model_has_roles`
 --
 ALTER TABLE `quizzes`
   ADD CONSTRAINT `quizzes_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `quiz_results`
+--
+ALTER TABLE `quiz_results`
+  ADD CONSTRAINT `table_quiz_results_course_id_foreign` FOREIGN KEY (`course_id`) REFERENCES `courses` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `table_quiz_results_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `replies`

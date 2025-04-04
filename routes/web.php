@@ -20,10 +20,12 @@ use App\Http\Controllers\Backend\TestimonialController;
 use App\Http\Controllers\Frontend\IndexController;
 use App\Http\Controllers\Frontend\WishListController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\QuizController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RedirectIfAuthenticated;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use App\Models\QuizResult;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -49,6 +51,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/get-wishlist-course/','GetWishlistCourse');
         Route::get('/wishlist-remove/{id}','RemoveWishlist');
     });
+
+    Route::get('/all/quiz/course', [QuizController::class, 'quizShow'])->name('user.quiz');
 
     Route::controller(OrderController::class)->group(function (){
         Route::get('/my/course','MyCourse')->name('my.course');
@@ -302,11 +306,28 @@ Route::get('/instructor/login', [InstructorController::class, 'InstructorLogin']
 Route::get('/course/details/{id}/{slug}', [IndexController::class, 'CourseDetails']);
 
 Route::get('/quiz/course/{id}', [IndexController::class, 'QuizCourse'])->name('quiz.course');
-Route::get('/quiz/result/{score}/{total}', [IndexController::class, 'QuizResult'])->name('quiz.result');
 
+Route::get('/quiz/result/{id}/{score}/{total}/{correct}/{wrong}', [IndexController::class, 'QuizResult'])->name('quiz.result');
 
+Route::post('/quiz/result/store', function (Request $request){
+    $request->validate([
+        'course_id' => 'required|exists:courses,id',
+        'correct_answers' => 'required|integer',
+        'wrong_answers' => 'required|integer',
+        'score' => 'required|integer',
+    ]);
 
+    QuizResult::create([
+        'user_id' => auth()->id(),
+        'course_id' => $request->course_id,
+        'correct_answers' => $request->correct_answers,
+        'wrong_answers' => $request->wrong_answers,
+        'score' => $request->score,
+    ]);
 
+    return response()->json(['message' => 'Hasil kuis berhasil disimpan']);
+    
+});
 
 Route::get('/category/{id}/{slug}', [IndexController::class, 'CategoryCourse']);
 Route::get('/category/all', [IndexController::class, 'CategoryAll'])->name('category.all');

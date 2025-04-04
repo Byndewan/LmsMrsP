@@ -15,6 +15,7 @@ use App\Models\Review;
 use App\Models\CourseLecture;
 use App\Models\CourseSection;
 use App\Models\Course_goal;
+use App\Models\QuizResult;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -79,12 +80,37 @@ class IndexController extends Controller
 
     public function QuizCourse() {
         $questions = Quiz::all();
-        return view('frontend.quiz.index',compact('questions'));
+        $course = Course::first();
+
+        return view('frontend.quiz.index',compact('questions','course'));
     }
 
-    public function QuizResult($score, $total) {
-        return view('frontend.quiz.result', compact('score', 'total'));
+    public function QuizResult($id, $score, $total, $correct, $wrong)
+    {
+        $course = Course::findOrFail($id);
+
+        return view('frontend.quiz.result', compact('score', 'total', 'course', 'correct', 'wrong'));
     }
+
+    // public function storeResult(Request $request)
+    // {
+    //     $request->validate([
+    //         'quiz_id' => 'required|exists:quizzes,id',
+    //         'correct_answers' => 'required|integer',
+    //         'wrong_answers' => 'required|integer',
+    //         'score' => 'required|integer',
+    //     ]);
+
+    //     QuizResult::create([
+    //         'user_id' => auth()->id(),
+    //         'quiz_id' => $request->quiz_id,
+    //         'correct_answers' => $request->correct_answers,
+    //         'wrong_answers' => $request->wrong_answers,
+    //         'score' => $request->score,
+    //     ]);
+
+    //     return response()->json(['message' => 'Hasil kuis berhasil disimpan']);
+    // }
 
     public function getQuestions()
     {
