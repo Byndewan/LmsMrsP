@@ -24,6 +24,9 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\User;
 use App\Mail\Orderconfirm;
+use Midtrans\Config;
+use Midtrans\Notification as MidtransNotification;
+use Midtrans\Snap;
 use Stripe;
 
 class CartController extends Controller
@@ -47,11 +50,11 @@ class CartController extends Controller
 
         if ($course->discount_price == NULL) {
             Cart::add([
-                'id' => $id, 
-                'name' => $request->course_name, 
-                'qty' => 1, 
-                'price' => $course->selling_price, 
-                'weight' => 1, 
+                'id' => $id,
+                'name' => $request->course_name,
+                'qty' => 1,
+                'price' => $course->selling_price,
+                'weight' => 1,
                 'options' => [
                     'image' => $course->course_image,
                     'slug' => $course->course_name_slug,
@@ -60,11 +63,11 @@ class CartController extends Controller
             ]);
         } else {
             Cart::add([
-                'id' => $id, 
-                'name' => $request->course_name, 
-                'qty' => 1, 
-                'price' => $course->selling_price, 
-                'weight' => 1, 
+                'id' => $id,
+                'name' => $request->course_name,
+                'qty' => 1,
+                'price' => $course->selling_price,
+                'weight' => 1,
                 'options' => [
                     'image' => $course->course_image,
                     'slug' => $course->course_name_slug,
@@ -142,7 +145,7 @@ class CartController extends Controller
             ]);
         }
         return response()->json(['success' => 'Course Remove From Cart']);
-    }    
+    }
 
     public function CouponApply(Request $request)
     {
@@ -177,7 +180,7 @@ class CartController extends Controller
                     'discount_amount' => round(Cart::total() * $coupon->coupon_discount/100),
                     'total_amount' => round(Cart::total() - Cart::total() * $coupon->coupon_discount/100),
                 ]);
-    
+
                 return response()->json(array(
                     'validity' => true,
                     'success' => 'Coupon Applied Successfully'
@@ -263,13 +266,13 @@ class CartController extends Controller
             $data['address'] = $request->address;
             $data['course_title'] = $request->course_title;
             $cartTotal = Cart::total();
-            $carts = Cart::content();  
-        
+            $carts = Cart::content();
 
-        if ($request->cash_delivery == 'stripe') { 
+
+        if ($request->cash_delivery == 'stripe') {
             return view('frontend.payment.stripe', compact('data','cartTotal','carts'));
         } elseif ($request->cash_delivery == 'handcash') {
-           // Create a new Payment Record  
+           // Create a new Payment Record
         $data = new Payment();
         $data->name = $request->name;
         $data->email = $request->email;
@@ -296,7 +299,7 @@ class CartController extends Controller
                     'message' => 'You have already enrolled in this course',
                     'alert-type' => 'error'
                  );
-                 
+
                  return redirect()->back()->with($notification);
             }
 
@@ -306,7 +309,7 @@ class CartController extends Controller
             $order->course_id = $request->course_id[$key];
             $order->instructor_id = $request->instructor_id[$key];
             $order->course_title = $course_title;
-            $order->price = $request->price[$key];  
+            $order->price = $request->price[$key];
             $order->save();
         }
 
@@ -327,17 +330,56 @@ class CartController extends Controller
 
             // End send email to student //
 
-            /// Send Notification 
+            /// Send Notification
             Notification::send($user, new OrderComplete($request->name));
 
             $notification = array(
                 'message' => 'Cash Payment Submit Successfully',
                 'alert-type' => 'success'
                 );
-    
+
                 return redirect()->route('index')->with($notification);
+        } elseif ($request->cash_delivery == 'midtrans') {
+            Config::$serverKey = 'SB-Mid-server-39zR0mT9p972NtZIVsAKw-ws';
+            Config::$isProduction = env('MIDTRANS_IS_PRODUCTION') == 'true';
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
+
+
+
+            $data = new Payment();
+            $data->name = $request->name;
+            $data->email = $request->email;
+            $data->phone = $request->phone;
+            $data->address = $request->address;
+            $data->cash_delivery = $request->cash_delivery;
+            $data->total_amount = $total_amount * 16560;
+            $data->payment_type = 'Midtrans';
+            $data->invoice_no = 'EOS' . mt_rand(10000000, 99999999);
+            $data->order_date = Carbon::now()->format('d F Y');
+            $data->order_month = Carbon::now()->format('F');
+            $data->order_year = Carbon::now()->format('Y');
+            $data->status = 'pending';
+            $data->created_at = Carbon::now();
+            $data->save();
+
+            $transaction = [
+                'transaction_details' => [
+                    'order_id' => $data->invoice_no,
+                    'gross_amount' => $total_amount * 16560,
+                ],
+                'customer_details' => [
+                    'first_name' => $data = $request->name,
+                    'email' => $data = $request->email,
+                    'phone' => $data = $request->phone,
+                ]
+            ];
+
+            $orderId = Payment::first();
+
+            $snapToken = Snap::getSnapToken($transaction);
+            return view('frontend.payment.midtrans', ['data' => $data, 'order_id' => $orderId->invoice_no, 'snap_token' => $snapToken, 'carts' => $carts]);
         }
-    
     }
 
     public function StripeOrder(Request $request)
@@ -345,7 +387,7 @@ class CartController extends Controller
         if (Session::has('coupon')) {
             $total_amount = Session::get('coupon')['total_amount'];
         } else {
-            $total_amount = round(Cart::total()); 
+            $total_amount = round(Cart::total());
         }
 
         \Stripe\Stripe::setApiKey('sk_test_51QvvNyIWwFr15ddxVTiC1nY8PuXLfdZhbJeIxaxjJrHs1xEPgXl7yrwaYcsPkB8qgrnD4jjo2Yeyl3tOia0ccpiz00eJpEx0eE');
@@ -400,6 +442,65 @@ class CartController extends Controller
         return redirect()->route('index')->with($notification);
     }
 
+
+    public function MidtransOrder(Request $request){
+        $result = $request->input('result');
+
+            if (!$result) {
+                return response()->json(['message' => 'Result not found.'], 400);
+            }
+
+            $order_id = $result['order_id'] ?? null;
+            $transaction_status = $result['transaction_status'] ?? 'unknown';
+            $payment_type = $result['payment_type'] ?? 'unknown';
+            $fraud_status = $result['fraud_status'] ?? null;
+
+            $payment = Payment::where('invoice_no', $order_id)->first();
+
+            if (!$payment) {
+                return response()->json(['message' => 'Payment not found.'], 404);
+            }
+
+            if ($transaction_status == 'capture') {
+                if ($fraud_status == 'challenge') {
+                    $payment->status = 'challenge';
+                } elseif ($fraud_status == 'accept') {
+                    $payment->status = 'confirm';
+                }
+            } elseif ($transaction_status == 'settlement') {
+                $payment->status = 'confirm';
+            } elseif ($transaction_status == 'pending') {
+                $payment->status = 'pending';
+            } elseif (in_array($transaction_status, ['deny', 'cancel', 'expire'])) {
+                $payment->status = 'failed';
+            }
+
+            $payment->payment_type = 'Midtrans';
+            $payment->invoice_no = 'EOS' . $result['transaction_id'] ?? null;
+            $payment->update();
+
+            $carts = Cart::content();
+            foreach ($carts as $cart) {
+                Order::insert([
+                    'payment_id' => $payment->id,
+                    'user_id' => Auth::user()->id,
+                    'course_id' => $cart->id,
+                    'instructor_id' => $cart->options->instructor,
+                    'course_title' => $cart->name,
+                    'price' => $cart->price * 16560,
+                    'created_at' => Carbon::now(),
+                ]);
+            }
+
+            if (Session::has('coupon')) {
+                Session::forget('coupon');
+            }
+            Cart::destroy();
+    
+            return response()->json(['message' => 'Payment Confirm Successfully']);
+
+        }
+
     public function BuyToCart(Request $request, $id)
     {
         $course = Course::find($id);
@@ -415,11 +516,11 @@ class CartController extends Controller
 
         if ($course->discount_price == NULL) {
             Cart::add([
-                'id' => $id, 
-                'name' => $request->course_name, 
-                'qty' => 1, 
-                'price' => $course->selling_price, 
-                'weight' => 1, 
+                'id' => $id,
+                'name' => $request->course_name,
+                'qty' => 1,
+                'price' => $course->selling_price,
+                'weight' => 1,
                 'options' => [
                     'image' => $course->course_image,
                     'slug' => $course->course_name_slug,
@@ -428,11 +529,11 @@ class CartController extends Controller
             ]);
         } else {
             Cart::add([
-                'id' => $id, 
-                'name' => $request->course_name, 
-                'qty' => 1, 
-                'price' => $course->selling_price, 
-                'weight' => 1, 
+                'id' => $id,
+                'name' => $request->course_name,
+                'qty' => 1,
+                'price' => $course->selling_price,
+                'weight' => 1,
                 'options' => [
                     'image' => $course->course_image,
                     'slug' => $course->course_name_slug,
@@ -454,5 +555,5 @@ class CartController extends Controller
         }
         return response()->json(['count' => $user->unreadNotifications()->count()]);
 
-    }// End Method 
+    }// End Method
 }

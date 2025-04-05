@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 04, 2025 at 02:35 PM
+-- Generation Time: Apr 05, 2025 at 12:44 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -487,7 +487,10 @@ CREATE TABLE `orders` (
 
 INSERT INTO `orders` (`id`, `payment_id`, `user_id`, `course_id`, `instructor_id`, `course_title`, `price`, `created_at`, `updated_at`) VALUES
 (20, 34, 3, 19, 2, 'Hiragana & Katakana Mastery: Your First Step to Japanese', 400, '2025-03-16 06:12:10', '2025-03-16 06:12:10'),
-(21, 35, 3, 14, 2, 'Grammar Made Simple: Master English Tenses Easily', 300, '2025-03-16 20:33:17', '2025-03-16 20:33:17');
+(21, 35, 3, 14, 2, 'Grammar Made Simple: Master English Tenses Easily', 300, '2025-03-16 20:33:17', '2025-03-16 20:33:17'),
+(27, 168, 3, 22, 2, 'Business English: Communicate Like a Pro', 8280000, '2025-04-05 03:31:44', NULL),
+(28, 169, 3, 21, 2, 'TOEFL Mastery: Crush the Exam with Confidence', 8280000, '2025-04-05 03:40:08', NULL),
+(29, 170, 3, 18, 2, 'French Pronunciation Bootcamp: Sound Like a Native!', 3312000, '2025-04-05 03:43:54', NULL);
 
 -- --------------------------------------------------------
 
@@ -545,7 +548,10 @@ INSERT INTO `payments` (`id`, `name`, `email`, `phone`, `address`, `cash_deliver
 (32, 'Onis', 'onis@gmail.com', '123', 'Korea', 'handcash', '300', 'Direct Payment', 'EOS70790250', '06 March 2025', 'March', '2025', 'pending', '2025-03-05 19:42:20', '2025-03-05 19:42:20'),
 (33, 'Onis', 'onis@gmail.com', '123', 'Korea', 'handcash', '300', 'Direct Payment', 'EOS43575614', '06 March 2025', 'March', '2025', 'pending', '2025-03-05 20:52:40', '2025-03-05 20:52:40'),
 (34, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'handcash', '320', 'Direct Payment', 'EOS27562089', '16 March 2025', 'March', '2025', 'pending', '2025-03-16 06:12:10', '2025-03-16 06:12:10'),
-(35, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'handcash', '240', 'Direct Payment', 'EOS43547443', '17 March 2025', 'March', '2025', 'pending', '2025-03-16 20:33:17', '2025-03-16 20:33:17');
+(35, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'handcash', '240', 'Direct Payment', 'EOS43547443', '17 March 2025', 'March', '2025', 'pending', '2025-03-16 20:33:17', '2025-03-16 20:33:17'),
+(168, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'midtrans', '8280000', 'Midtrans', 'EOS09aaaf34-75bc-40cc-859f-3e4796a49cae', '05 April 2025', 'April', '2025', 'confirm', '2025-04-05 03:31:13', '2025-04-05 03:31:44'),
+(169, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'midtrans', '8280000', 'Midtrans', 'EOS2164de4c-56bd-44d7-832d-30a6a76bee92', '05 April 2025', 'April', '2025', 'confirm', '2025-04-05 03:39:13', '2025-04-05 03:40:08'),
+(170, 'User', 'user@gmail.com', '1234567890', 'Sukamaju', 'midtrans', '3312000', 'Midtrans', 'EOS915285b1-0788-4709-abfc-ab125d648753', '05 April 2025', 'April', '2025', 'confirm', '2025-04-05 03:43:26', '2025-04-05 03:43:54');
 
 -- --------------------------------------------------------
 
@@ -947,7 +953,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `username`, `email`, `email_verified_at`, `password`, `photo`, `phone`, `address`, `role`, `status`, `last_seen`, `remember_token`, `created_at`, `updated_at`) VALUES
 (1, 'Admin', 'admin', 'admin@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412221500cat profile 2.jpg', '1234', 'Indonesia', 'admin', '1', '2025-03-21 04:45:59', NULL, NULL, '2025-03-20 21:45:59'),
 (2, 'Instructor', 'instructor', 'instructor@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412241046profile photo.jpg', '993', 'Indonesia', 'instructor', '1', '2025-04-03 12:49:17', NULL, '2025-02-04 07:11:01', '2025-04-03 05:49:17'),
-(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-04-04 11:56:50', NULL, NULL, '2025-04-04 04:56:50'),
+(3, 'User', 'user', 'user@gmail.com', NULL, '$2y$12$H0yqNzsoOKLp7tdbS7zaie9pf6pDHNzBk/adLWBRdJPJp56pmWc4O', '202412271457bebek.jpg', '1234567890', 'Sukamaju', 'user', '1', '2025-04-05 10:36:04', NULL, NULL, '2025-04-05 03:36:04'),
 (4, 'Onis', 'onis', 'onis@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '20241227150120240130_050807.jpg', '123', 'Korea', 'user', '1', '2025-03-22 08:49:05', NULL, '2024-12-19 05:30:18', '2025-03-22 01:49:05'),
 (5, 'Batu Karang', 'batukarang', 'batukarang@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', '202412271447cat glasses.jpg', '0888', 'BBC', 'user', '1', NULL, NULL, '2024-12-25 04:13:09', '2024-12-27 07:49:12'),
 (6, 'Azlia', 'azlia', 'azlia@gmail.com', NULL, '$2y$10$dM8vlhsaFf7h10MVhAUtZuJrKLOwX2mqKFuhGxPocj8UrQVWxDzBG', NULL, '0881', 'Indonesia', 'instructor', '1', NULL, NULL, NULL, '2025-02-17 20:14:00'),
@@ -1287,13 +1293,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=171;
 
 --
 -- AUTO_INCREMENT for table `permissions`

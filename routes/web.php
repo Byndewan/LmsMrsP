@@ -326,7 +326,7 @@ Route::post('/quiz/result/store', function (Request $request){
     ]);
 
     return response()->json(['message' => 'Hasil kuis berhasil disimpan']);
-    
+
 });
 
 Route::get('/category/{id}/{slug}', [IndexController::class, 'CategoryCourse']);
@@ -366,6 +366,9 @@ Route::get('/checkout', [CartController::class, 'CheckoutCreate'])->name('checko
 
 Route::post('/payment', [CartController::class, 'Payment'])->name('payment');
 Route::post('/stripe_order', [CartController::class, 'StripeOrder'])->name('stripe_order');
+
+Route::post('/midtrans_order', [CartController::class, 'MidtransOrder'])->name('midtrans_order');
+
 
 Route::post('/store/review', [ReviewController::class, 'StoreReview'])->name('store.review');
 

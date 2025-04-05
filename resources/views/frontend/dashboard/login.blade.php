@@ -96,7 +96,6 @@ Login Page | Linguana
        END CONTACT AREA
 ================================= -->
 <script>
-        // Contoh pemanggilan mixin
         document.addEventListener('DOMContentLoaded', function() {
             showAlert('success', 'You Need to Login First!');
         });
